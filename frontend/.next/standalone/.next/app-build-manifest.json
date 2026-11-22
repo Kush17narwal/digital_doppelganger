@@ -1,0 +1,98 @@
+{
+  "pages": {
+    "/_not-found": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/app/_not-found-7e384cf7cee2acd8.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/176-adf5d97b86880138.js",
+      "static/css/a0f49a13e1113367.css",
+      "static/chunks/app/layout-7ec9b59bad6048da.js"
+    ],
+    "/analytics/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/app/analytics/page-5148be7a4189fc35.js"
+    ],
+    "/automata/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/c37d3baf-b1ec6557171419d2.js",
+      "static/chunks/172-3780a74ae3c2c3f0.js",
+      "static/css/a275cc2b185e04f8.css",
+      "static/chunks/app/automata/page-b22b87971bd2e902.js"
+    ],
+    "/compare/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/app/compare/page-d96dc5be31bf4dd6.js"
+    ],
+    "/attack-lab/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/176-adf5d97b86880138.js",
+      "static/chunks/app/attack-lab/page-6d4615005f002231.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/176-adf5d97b86880138.js",
+      "static/chunks/app/page-488f0097b89e0ec3.js"
+    ],
+    "/playground/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/app/playground/page-995e570aa87d0344.js"
+    ],
+    "/dashboard/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/176-adf5d97b86880138.js",
+      "static/chunks/app/dashboard/page-6059994999c18d2c.js"
+    ],
+    "/sessions/[id]/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/app/sessions/[id]/page-934b41b9aaf02e27.js"
+    ],
+    "/sessions/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/176-adf5d97b86880138.js",
+      "static/chunks/app/sessions/page-ec1bfaf5ae284bac.js"
+    ],
+    "/simulator/page": [
+      "static/chunks/webpack-cf49d22b57ff64e2.js",
+      "static/chunks/fd9d1056-c1ac50264908d5c3.js",
+      "static/chunks/938-936a2287f1a82568.js",
+      "static/chunks/main-app-5c38a108217f975f.js",
+      "static/chunks/176-adf5d97b86880138.js",
+      "static/chunks/app/simulator/page-66f5eeb7251919db.js"
+    ]
+  }
+}

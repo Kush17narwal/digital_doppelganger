@@ -1,0 +1,13 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/analytics/page": "app/analytics/page.js",
+  "/automata/page": "app/automata/page.js",
+  "/compare/page": "app/compare/page.js",
+  "/attack-lab/page": "app/attack-lab/page.js",
+  "/page": "app/page.js",
+  "/playground/page": "app/playground/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/sessions/[id]/page": "app/sessions/[id]/page.js",
+  "/sessions/page": "app/sessions/page.js",
+  "/simulator/page": "app/simulator/page.js"
+}
