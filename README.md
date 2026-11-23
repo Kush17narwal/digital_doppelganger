@@ -126,7 +126,7 @@ npm run dev
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DATABASE_URL` | Async PostgreSQL URL | `postgresql+asyncpg://postgres:postgres@localhost:5432/doppelganger` |
+| `DATABASE_URL` | PostgreSQL URL used by the async backend; standard `postgresql://` Supabase URLs are supported | `postgresql+asyncpg://postgres:postgres@localhost:5432/doppelganger` |
 | `SYNC_DATABASE_URL` | Sync PostgreSQL URL | `postgresql://postgres:postgres@localhost:5432/doppelganger` |
 | `CORS_ORIGINS` | Allowed CORS origins | `http://localhost:3000` |
 | `DEBUG` | Debug mode | `true` |
@@ -137,6 +137,31 @@ npm run dev
 |----------|-------------|---------|
 | `NEXT_PUBLIC_API_URL` | Backend API URL | `http://localhost:8000` |
 | `NEXT_PUBLIC_WS_URL` | WebSocket URL | `ws://localhost:8000` |
+
+### Deploy backend on Render with Supabase
+
+The backend uses SQLAlchemy with PostgreSQL, so Supabase Postgres is configured through `DATABASE_URL` (no Supabase service-role key is needed). For a persistent Render Web Service, use the Supabase **Session pooler** connection string from **Supabase → Connect → Session pooler**. The Session pooler is reachable over IPv4 and supports prepared statements. Keep the database password private.
+
+In Render, create a **Web Service** for this repository and set:
+
+| Render setting | Value |
+|---|---|
+| Root Directory | `backend` |
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+
+Add these Render environment variables:
+
+| Name | Value |
+|---|---|
+| `DATABASE_URL` | Supabase Session pooler URI, including `?sslmode=require` |
+| `CORS_ORIGINS` | Your Vercel frontend origin, e.g. `https://your-project.vercel.app` |
+| `SECRET_KEY` | A long, random value kept only in Render |
+| `DEBUG` | `false` |
+
+The backend adapts Supabase's standard `postgresql://` DSN for its async PostgreSQL driver and maps `sslmode=require` to asyncpg's `ssl=require` option. On first startup it creates the SQLAlchemy tables and seeds demo rows if the database is empty.
+
+Keep the frontend on Vercel. Set `NEXT_PUBLIC_API_URL` to the Render service URL (for example, `https://your-service.onrender.com`) and `NEXT_PUBLIC_WS_URL` to its `wss://` WebSocket URL, then redeploy the Vercel frontend so the build picks up those values.
 
 ## Running Tests
 

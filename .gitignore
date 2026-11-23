@@ -1,1 +1,11 @@
 node_modules/
+
+# Keep local configuration and credentials out of Git.
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build output and local runtime files.
+**/__pycache__/
+*.py[cod]
+.DS_Store
