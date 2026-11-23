@@ -1,0 +1,8 @@
+project_id = "digital-doppelganger"
+
+[auth]
+enable_signup = true
+enable_anonymous_sign_ins = true
+
+[functions.api]
+verify_jwt = true

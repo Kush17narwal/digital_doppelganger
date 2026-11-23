@@ -1,52 +1,48 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { createWebSocket } from '@/lib/api';
+import { sendSessionEvent, subscribeToEvents } from '@/lib/api';
 
 interface UseWebSocketOptions {
   onMessage?: (data: any) => void;
   autoConnect?: boolean;
 }
 
+// Compatibility hook: Supabase Realtime replaces the old FastAPI WebSocket.
 export function useWebSocket(path: string, options: UseWebSocketOptions = {}) {
-  const wsRef = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
   const [lastMessage, setLastMessage] = useState<any>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
+  const callbackRef = useRef(options.onMessage);
+  callbackRef.current = options.onMessage;
 
   const connect = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) return;
-
-    const ws = createWebSocket(path);
-    wsRef.current = ws;
-
-    ws.onopen = () => setConnected(true);
-    ws.onclose = () => setConnected(false);
-    ws.onerror = () => setConnected(false);
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        setLastMessage(data);
-        options.onMessage?.(data);
-      } catch {}
-    };
+    if (cleanupRef.current || !path) return;
+    const sessionId = path.match(/^\/ws\/events\/([^/]+)$/)?.[1] ?? null;
+    cleanupRef.current = subscribeToEvents(path === '/ws/dashboard' ? null : sessionId, (data) => {
+      setLastMessage(data);
+      callbackRef.current?.(data);
+    }, setConnected);
   }, [path]);
 
   const send = useCallback((data: any) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(data));
-    }
-  }, []);
+    if (!path.startsWith('/ws/events/')) return Promise.resolve(undefined);
+    return sendSessionEvent(path, data);
+  }, [path]);
 
   const disconnect = useCallback(() => {
-    wsRef.current?.close();
-    wsRef.current = null;
+    cleanupRef.current?.();
+    cleanupRef.current = null;
     setConnected(false);
   }, []);
 
   useEffect(() => {
-    if (options.autoConnect !== false) connect();
-    return () => { wsRef.current?.close(); };
-  }, []);
+    if (path && options.autoConnect !== false) connect();
+    return () => {
+      cleanupRef.current?.();
+      cleanupRef.current = null;
+    };
+  }, [connect, path, options.autoConnect]);
 
   return { connected, lastMessage, send, connect, disconnect };
 }

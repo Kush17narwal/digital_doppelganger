@@ -32,7 +32,6 @@ export default function PlaygroundPage() {
   const { connected, send } = useWebSocket(
     sessionId ? `/ws/events/${sessionId}` : '',
     {
-      autoConnect: false,
       onMessage: (data) => {
         setEvents(prev => [...prev, data]);
         setCurrentState(data.product_state);
@@ -55,21 +54,22 @@ export default function PlaygroundPage() {
   }, []);
 
   const emitEvent = useCallback((eventType: string, target?: string) => {
-    if (!sessionId || sessionEnded) return;
+    if (!sessionId || sessionEnded) return Promise.resolve(undefined);
     const event = {
       event_type: eventType,
       timestamp: Date.now() / 1000,
       page: SHOP_PAGES.find(p => p.id === currentPage)?.path || '/',
       target,
     };
-    send(event);
+    const sent = send(event);
     eventCountRef.current++;
+    return sent;
   }, [sessionId, currentPage, send, sessionEnded]);
 
   const endSession = useCallback(async () => {
     if (!sessionId) return;
-    emitEvent('session_end');
     try {
+      await emitEvent('session_end');
       const result = await sessionsApi.end(sessionId);
       setScore(result);
       setSessionEnded(true);

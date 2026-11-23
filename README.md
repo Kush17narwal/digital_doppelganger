@@ -8,20 +8,13 @@ A cybersecurity/behavioral-analysis platform that analyzes user interaction sequ
 
 ```
 Frontend (Next.js / React / TypeScript / Tailwind CSS)
+   ↓ HTTPS + Supabase Auth (anonymous user)
+Supabase Edge Function (TypeScript)
    ↓
-REST API / WebSocket (FastAPI)
-   ↓
-Event Processor
-   ↓
-Feature Extractor
-   ↓
-Automata Engine (4 DFAs × Product Automaton)
-   ↓
-Behavioral Scorer
-   ↓
-Detection Engine
-   ↓
-PostgreSQL
+Supabase Postgres + Realtime
+   ├── event processing and scoring
+   ├── per-user sessions, events, states, detections
+   └── realtime event stream to the browser
 ```
 
 ### Automata Engine
@@ -68,51 +61,16 @@ digital_doppelganger/
 │   │   └── lib/                 # API client
 │   ├── package.json
 │   └── Dockerfile
-├── docker-compose.yml
-└── docs/
+├── supabase/
+│   ├── config.toml
+│   ├── functions/api/           # App API and automata processing
+│   └── migrations/              # Tables, indexes, RLS, Realtime
+└── backend/                     # Former FastAPI implementation, retained for reference
 ```
 
 ## Installation
 
-### Prerequisites
-
-- Python 3.11+
-- Node.js 20+
-- PostgreSQL 16+
-- Docker & Docker Compose (optional)
-
-### Docker (Recommended)
-
-```bash
-docker compose up --build
-```
-
-Frontend: http://localhost:3000
-Backend: http://localhost:8000
-API Docs: http://localhost:8000/docs
-
-### Local Development
-
-#### Backend
-
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
-pip install -r requirements.txt
-
-# Set up PostgreSQL database
-createdb doppelganger
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your database URL
-
-# Run
-uvicorn app.main:app --reload --port 8000
-```
-
-#### Frontend
+### Local development
 
 ```bash
 cd frontend
@@ -120,48 +78,39 @@ npm install
 npm run dev
 ```
 
-### Environment Variables
+Copy `frontend/.env.example` to `frontend/.env.local` and fill in the Supabase project URL and public key. In Supabase Auth settings, enable **Anonymous Sign-Ins**.
 
-#### Backend (.env)
+### Deploy everything with Supabase + Vercel
+
+There is no Render service in this deployment. Supabase runs the API in an Edge Function, stores data in Postgres, authenticates anonymous browser sessions, and streams live events through Realtime.
+
+1. Create a Supabase project. In **Authentication → Sign In / Providers**, enable **Anonymous Sign-Ins**.
+2. From the repository root, link the Supabase project and deploy its schema and API:
+
+   ```bash
+   supabase login
+   supabase link --project-ref YOUR_PROJECT_REF
+   supabase db push
+   supabase functions deploy api
+   ```
+
+3. In Vercel, open the frontend project's **Settings → Environment Variables** and set these for Production:
+
+   | Name | Value |
+   |---|---|
+   | `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project URL |
+   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key (legacy anon key also works) |
+
+4. Redeploy the Vercel project. The browser signs in anonymously, calls the Supabase `api` Edge Function, and receives live event inserts over Supabase Realtime.
+
+The Edge Function keeps the service-role credential server-side; the Vercel app only gets the public project key. Row Level Security isolates sessions and their events by the anonymous user's Supabase ID. The Python FastAPI directory is retained as the previous implementation and is not used by the Supabase/Vercel deployment.
+
+#### Frontend environment variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL URL used by the async backend; standard `postgresql://` Supabase URLs are supported | `postgresql+asyncpg://postgres:postgres@localhost:5432/doppelganger` |
-| `SYNC_DATABASE_URL` | Sync PostgreSQL URL | `postgresql://postgres:postgres@localhost:5432/doppelganger` |
-| `CORS_ORIGINS` | Allowed CORS origins | `http://localhost:3000` |
-| `DEBUG` | Debug mode | `true` |
-
-#### Frontend (.env.local)
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NEXT_PUBLIC_API_URL` | Backend API URL | `http://localhost:8000` |
-| `NEXT_PUBLIC_WS_URL` | WebSocket URL | `ws://localhost:8000` |
-
-### Deploy backend on Render with Supabase
-
-The backend uses SQLAlchemy with PostgreSQL, so Supabase Postgres is configured through `DATABASE_URL` (no Supabase service-role key is needed). For a persistent Render Web Service, use the Supabase **Session pooler** connection string from **Supabase → Connect → Session pooler**. The Session pooler is reachable over IPv4 and supports prepared statements. Keep the database password private.
-
-In Render, create a **Web Service** for this repository and set:
-
-| Render setting | Value |
-|---|---|
-| Root Directory | `backend` |
-| Build Command | `pip install -r requirements.txt` |
-| Start Command | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
-
-Add these Render environment variables:
-
-| Name | Value |
-|---|---|
-| `DATABASE_URL` | Supabase Session pooler URI, including `?sslmode=require` |
-| `CORS_ORIGINS` | Your Vercel frontend origin, e.g. `https://your-project.vercel.app` |
-| `SECRET_KEY` | A long, random value kept only in Render |
-| `DEBUG` | `false` |
-
-The backend adapts Supabase's standard `postgresql://` DSN for its async PostgreSQL driver and maps `sslmode=require` to asyncpg's `ssl=require` option. On first startup it creates the SQLAlchemy tables and seeds demo rows if the database is empty.
-
-Keep the frontend on Vercel. Set `NEXT_PUBLIC_API_URL` to the Render service URL (for example, `https://your-service.onrender.com`) and `NEXT_PUBLIC_WS_URL` to its `wss://` WebSocket URL, then redeploy the Vercel frontend so the build picks up those values.
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | — |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key; legacy anon key also works | — |
 
 ## Running Tests
 
